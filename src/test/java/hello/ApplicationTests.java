@@ -24,20 +24,20 @@ import java.time.LocalDateTime;
 import javax.crypto.SecretKey;
 import javax.servlet.http.Cookie;
 import lombok.NonNull;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ApplicationTests
@@ -63,6 +63,13 @@ public class ApplicationTests
 	public void accessSecuredResourceWithInvalidAuthenticationShouldBeForbidden() throws Exception
 	{
 		mockMvc.perform(get("/hello").header(HttpHeaders.AUTHORIZATION, "sadfdas"))
+			.andExpect(status().isForbidden());
+	}
+
+	@Test
+	public void accessSecuredResourceWithMalformedTokenShouldBeForbidden() throws Exception
+	{
+		mockMvc.perform(get("/hello").header(HttpHeaders.AUTHORIZATION, "LtpaToken2 sadfdas"))
 			.andExpect(status().isForbidden());
 	}
 

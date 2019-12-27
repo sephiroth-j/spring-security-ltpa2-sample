@@ -5,10 +5,10 @@
 
 	<groupId>de.sephiroth-j</groupId>
 	<artifactId>spring-security-ltpa2-sample</artifactId>
-	<name>Spring Security LTPA2 - Sample Project</name>
+	<name>Spring Security LTPA2 - Sample Project for Web Servlet</name>
 	<description>Spring Boot sample application to spring-security-ltpa2.</description>
 	<url>http://www.sephiroth-j.de/java/spring-security-ltpa2/</url>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<inceptionYear>2018</inceptionYear>
 	<issueManagement>
 		<system>GitHub Issues</system>
@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.4.RELEASE</version>
+		<version>2.2.2.RELEASE</version>
 	</parent>
 	
 	<properties>
@@ -35,8 +35,8 @@
 		<maven.compiler.source>${project.java.version}</maven.compiler.source>
 		<maven.compiler.target>${project.java.version}</maven.compiler.target>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
-		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-		<lombok.version>[1.16.18,)</lombok.version>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+		<lombok.version>[1.18.10,)</lombok.version>
 	</properties>
 	
 	<build>
@@ -48,7 +48,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.3</version>
+				<version>0.8.5</version>
 				<executions>
 					<execution>
 						<id>default-prepare-agent</id>
@@ -92,6 +92,10 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-ldap</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

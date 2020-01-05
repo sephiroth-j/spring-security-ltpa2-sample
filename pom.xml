@@ -111,6 +111,7 @@
 		<dependency>
 			<groupId>org.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- caching -->
 		<dependency>

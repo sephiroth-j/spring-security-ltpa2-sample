@@ -27,21 +27,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.ldap.DefaultLdapUsernameToDnMapper;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 @EnableCaching
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter
+public class WebSecurityConfig
 {
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception
+	@Bean
+	public SecurityFilterChain ltpa2SecurityFilterChain(final HttpSecurity http, final UserDetailsService userDetailsService) throws Exception
 	{
 		http
 			.authorizeRequests()
@@ -51,12 +51,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
 			.apply(new Ltpa2Configurer())
 				.sharedKey(sharedKey())
 				.signerKey(signerKey())
+				.and()
+			.userDetailsService(userDetailsService)
 			;
-		http.userDetailsService(userDetailsService());
+		return http.build();
 	}
 
 	@Bean
-	@Override
 	public UserDetailsService userDetailsService()
 	{
 		final DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource("ldap://127.0.0.1:33389/dc=foo,dc=bar");

@@ -70,7 +70,7 @@ public class ApplicationTests
 	public void accessSecuredResourceWithMalformedTokenShouldBeForbidden() throws Exception
 	{
 		mockMvc.perform(get("/hello").header(HttpHeaders.AUTHORIZATION, "LtpaToken2 sadfdas"))
-			.andExpect(status().isForbidden());
+			.andExpect(status().isIAmATeapot());
 	}
 
 	@Test

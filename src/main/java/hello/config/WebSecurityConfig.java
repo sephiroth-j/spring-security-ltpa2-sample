@@ -24,6 +24,7 @@ import javax.crypto.SecretKey;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -51,6 +52,8 @@ public class WebSecurityConfig
 			.apply(new Ltpa2Configurer())
 				.sharedKey(sharedKey())
 				.signerKey(signerKey())
+				// define custom failure handler to demonstrate changing the response code
+				.authFailureHandler((request, response, exception) -> response.sendError(HttpStatus.I_AM_A_TEAPOT.value(), "I am a teapot!"))
 				.and()
 			.userDetailsService(userDetailsService)
 			;

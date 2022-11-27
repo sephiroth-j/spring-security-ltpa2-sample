@@ -22,7 +22,7 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.time.LocalDateTime;
 import javax.crypto.SecretKey;
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,6 +84,25 @@ public class ApplicationTests
 
 	@Test
 	public void accessSecuredResourceWithCookieThenOk() throws Exception
+	{
+		Ltpa2Token token = createTestToken();
+		
+		Cookie ltpaCookie = new Cookie("LtpaToken2", encryptToken(token));
+		mockMvc.perform(get("/hello").cookie(ltpaCookie))
+			.andExpect(status().isOk());
+	}
+
+	@Test
+	public void accessSecuredMethodWithAuthenticationThenOk() throws Exception
+	{
+		Ltpa2Token token = createTestToken();
+		
+		mockMvc.perform(get("/secured-method").header(HttpHeaders.AUTHORIZATION, "LtpaToken2 ".concat(encryptToken(token))))
+			.andExpect(status().isOk());
+	}
+
+	@Test
+	public void accessSecuredMethodWithCookieThenOk() throws Exception
 	{
 		Ltpa2Token token = createTestToken();
 		

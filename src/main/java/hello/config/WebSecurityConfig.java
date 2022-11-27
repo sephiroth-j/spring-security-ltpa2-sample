@@ -25,7 +25,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,7 +37,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableCaching
-@EnableGlobalMethodSecurity(jsr250Enabled = true)
+@EnableMethodSecurity(jsr250Enabled = true)
 public class WebSecurityConfig
 {
 
@@ -45,9 +45,11 @@ public class WebSecurityConfig
 	public SecurityFilterChain ltpa2SecurityFilterChain(final HttpSecurity http, final UserDetailsService userDetailsService) throws Exception
 	{
 		http
-			.authorizeRequests()
-				.antMatchers("/", "/home").permitAll()
-				.antMatchers("/hello").hasRole("DEVELOPERS")
+			.authorizeHttpRequests()
+				.requestMatchers("/", "/home").permitAll()
+				.requestMatchers("/hello").hasRole("DEVELOPERS")
+				// all other require any authentication
+				.anyRequest().authenticated()
 				.and()
 			.apply(new Ltpa2Configurer())
 				.sharedKey(sharedKey())

@@ -45,20 +45,19 @@ public class WebSecurityConfig
 	public SecurityFilterChain ltpa2SecurityFilterChain(final HttpSecurity http, final UserDetailsService userDetailsService) throws Exception
 	{
 		http
-			.authorizeHttpRequests()
+			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/", "/home").permitAll()
 				.requestMatchers("/hello").hasRole("DEVELOPERS")
 				// all other require any authentication
 				.anyRequest().authenticated()
-				.and()
+			)
 			.apply(new Ltpa2Configurer())
 				.sharedKey(sharedKey())
 				.signerKey(signerKey())
 				// define custom failure handler to demonstrate changing the response code
 				.authFailureHandler((request, response, exception) -> response.sendError(HttpStatus.I_AM_A_TEAPOT.value(), "I am a teapot!"))
-				.and()
-			.userDetailsService(userDetailsService)
 			;
+		http.userDetailsService(userDetailsService);
 		return http.build();
 	}
 

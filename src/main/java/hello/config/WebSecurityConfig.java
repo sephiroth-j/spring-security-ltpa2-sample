@@ -21,6 +21,7 @@ import hello.auth.MyLdapUserDetailsManager;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +39,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableCaching
 @EnableMethodSecurity(jsr250Enabled = true)
+@Slf4j
 public class WebSecurityConfig
 {
 
@@ -46,17 +48,17 @@ public class WebSecurityConfig
 	{
 		http
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/", "/home").permitAll()
-				.requestMatchers("/hello").hasRole("DEVELOPERS")
-				// all other require any authentication
-				.anyRequest().authenticated()
+			.requestMatchers("/", "/home").permitAll()
+			.requestMatchers("/hello").hasRole("DEVELOPERS")
+			// all other require any authentication
+			.anyRequest().authenticated()
 			)
-			.apply(new Ltpa2Configurer())
-				.sharedKey(sharedKey())
-				.signerKey(signerKey())
-				// define custom failure handler to demonstrate changing the response code
-				.authFailureHandler((request, response, exception) -> response.sendError(HttpStatus.I_AM_A_TEAPOT.value(), "I am a teapot!"))
-			;
+			.with(new Ltpa2Configurer(),
+				ltpa2Configurer -> ltpa2Configurer
+					.sharedKey(sharedKey())
+					.signerKey(signerKey())
+					// define custom failure handler to demonstrate changing the response code
+					.authFailureHandler((request, response, exception) -> response.sendError(HttpStatus.I_AM_A_TEAPOT.value(), "I am a teapot!")));
 		http.userDetailsService(userDetailsService);
 		return http.build();
 	}
@@ -73,16 +75,32 @@ public class WebSecurityConfig
 		return manager;
 	}
 
-	private SecretKey sharedKey() throws GeneralSecurityException
+	private SecretKey sharedKey()
 	{
 		String testKey = "JvywHhxC+EhtUdeusbo31E5IUOEPmbMxMnKTTOB39fo=";
 		String testKeyPass = "test123";
-		return LtpaKeyUtils.decryptSharedKey(testKey, testKeyPass);
+		try
+		{
+			return LtpaKeyUtils.decryptSharedKey(testKey, testKeyPass);
+		}
+		catch (GeneralSecurityException ex)
+		{
+			log.error(ex.getLocalizedMessage());
+			return null;
+		}
 	}
 
-	private PublicKey signerKey() throws GeneralSecurityException
+	private PublicKey signerKey()
 	{
 		String testSignerKey = "AOECPMDAs0o7MzQIgxZhAXJZ2BaDE3mqRZAbkbQO38CgUIgeAPEA3iWIYp+p/Ai0J4//UOml20an+AuCnDGzcFCaf3S3EAiR4cK59vl/u8TIswPIg2akh4J7qL3E/qRxN9WD945tS3h0YhJZSq7rC22wytLsxbFuKpEuYfm1i5spAQAB";
-		return LtpaKeyUtils.decodePublicKey(testSignerKey);
+		try
+		{
+			return LtpaKeyUtils.decodePublicKey(testSignerKey);
+		}
+		catch (GeneralSecurityException ex)
+		{
+			log.error(ex.getLocalizedMessage());
+			return null;
+		}
 	}
 }
